@@ -1,0 +1,5 @@
+{
+  "name": "LinkDirect - Link Bypasser",
+  "description": "A sleek, dark-themed utility to bypass link shorteners and get direct URLs. Supports common services like Linkvertise, Bitly, and more.",
+  "requestFramePermissions": []
+}
