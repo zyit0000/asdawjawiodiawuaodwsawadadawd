@@ -31,10 +31,15 @@ export default function App() {
     (window.location.hostname === "localhost" ? "http://localhost:3000" : "")
   );
 
+  const isGitHubPages = window.location.hostname.endsWith("github.io");
+  const needsApiConfig = isGitHubPages && !apiBaseUrl;
+
   const fetchSupported = async () => {
     try {
       const response = await axios.get(`${apiBaseUrl}/api/supported`);
-      setSupportedServices(response.data);
+      // Ensure uniqueness in frontend as well
+      const uniqueServices = Array.from(new Set(response.data as string[]));
+      setSupportedServices(uniqueServices);
     } catch (err) {
       setSupportedServices(["Linkvertise", "Bitly", "TinyURL", "Adf.ly"]);
     }
@@ -154,6 +159,24 @@ export default function App() {
       </header>
 
       <AnimatePresence>
+        {needsApiConfig && !showApiConfig && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            className="bg-rose-500/10 border-b border-rose-500/20 py-2 px-6 text-center"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500 flex items-center justify-center gap-2">
+              <Lock className="w-3 h-3" />
+              API Configuration Required for GitHub Pages
+              <button 
+                onClick={() => setShowApiConfig(true)}
+                className="underline hover:text-white transition-colors ml-2"
+              >
+                Configure Now
+              </button>
+            </p>
+          </motion.div>
+        )}
         {showApiConfig && (
           <motion.div 
             initial={{ height: 0, opacity: 0 }}
@@ -315,8 +338,8 @@ export default function App() {
             <div className="flex-1 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
               <div className="flex flex-wrap gap-2">
                 {filteredServices.length > 0 ? (
-                  filteredServices.map(s => (
-                    <span key={s} className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-medium text-white/40 border border-white/5">
+                  filteredServices.map((s, index) => (
+                    <span key={`${s}-${index}`} className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-medium text-white/40 border border-white/5">
                       {s}
                     </span>
                   ))

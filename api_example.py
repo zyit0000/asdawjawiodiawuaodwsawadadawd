@@ -30,7 +30,7 @@ def bypass_link(target_url, api_base_url):
         response.raise_for_status() # Raise error for bad status codes
         
         data = response.json()
-        if data.get("success"):
+        if data.get("destination"):
             return data.get("destination")
         else:
             return f"Error: {data.get('error', 'Unknown error')}"
